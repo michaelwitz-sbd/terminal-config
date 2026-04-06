@@ -21,3 +21,22 @@ Homebrew is only required if you want the script to auto-install missing depende
 Useful setup options:
 - `./scripts/setup-terminal-config.sh --full-iterm2` (also restore global iTerm2 app preferences)
 - `./scripts/setup-terminal-config.sh --no-set-default-profile` (opt out of auto-setting the imported profile as default)
+
+## Zsh quick start (copy/paste)
+Run these commands in your terminal:
+
+```bash
+cd ~/Dev/terminal-config
+git pull
+./scripts/setup-terminal-config.sh
+```
+
+Then quit and re-open iTerm2.
+
+Important:
+- Run the script as `./scripts/setup-terminal-config.sh`
+- Do not run `source scripts/setup-terminal-config.sh`
+
+Why:
+- `./...` runs the script in its own Bash process (as intended by `#!/usr/bin/env bash`)
+- `source ...` executes script commands in your current shell session, which can cause unexpected side effects

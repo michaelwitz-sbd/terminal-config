@@ -40,6 +40,19 @@ Then install required apps:
 3. Restart iTerm2 and open a new tab/shell.
 4. The script will copy configs, install `~/.config/terminal-config/starship-init.zsh`, ensure `~/.zshrc` sources it, and set the imported iTerm2 profile as default.
 
+### Zsh users: explicit copy/paste
+```bash
+cd ~/Dev/terminal-config
+git pull
+./scripts/setup-terminal-config.sh
+```
+
+Do not run `source scripts/setup-terminal-config.sh`.
+
+Reason:
+- `./scripts/setup-terminal-config.sh` runs the installer in a separate Bash process (intended behavior).
+- `source scripts/setup-terminal-config.sh` runs it inside your current interactive shell, which can leak side effects into your live session.
+
 Optional full iTerm2 preferences restore (includes app-level/global settings):
 - `./scripts/setup-terminal-config.sh --full-iterm2`
 Optional dependency auto-install (if Homebrew already exists):
