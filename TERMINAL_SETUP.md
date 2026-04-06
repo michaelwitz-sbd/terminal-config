@@ -1,0 +1,96 @@
+# Terminal setup guide (iTerm2 + Starship)
+This document explains how to reproduce the terminal look-and-feel from this machine on another Mac.
+
+## What is included
+- Starship prompt config: `starship/starship.toml`
+- iTerm2 profile (colors/fonts/profile behavior): `iterm2/dynamic-profiles/default-profile.json`
+- Full iTerm2 preferences backup: `iterm2/com.googlecode.iterm2.plist`
+- Safe Zsh Starship init snippet: `zsh/starship-init.zsh`
+
+## Profile details captured from this machine
+- iTerm2 profile name: `Default`
+- Exported profiles count: `1`
+- Primary font: `CourierNewPSMT 18`
+- Non-ASCII font fallback: `Monaco 12`
+- Bright bold text enabled: `true`
+- Background color is near-white (RGB approximately `0.98, 0.98, 0.98`)
+
+## Prerequisites
+- macOS
+- iTerm2 installed
+- Homebrew installed
+- Zsh shell
+- Starship installed
+
+## Install required applications first
+If Homebrew is not installed yet, install it first using the official instructions:
+- https://brew.sh/
+
+Then install required apps:
+- `brew install --cask iterm2`
+- `brew install starship`
+
+## Quick start (recommended)
+1. Clone this repo:
+   - `git clone https://github.com/michaelwitz/terminal-config.git`
+2. Run the setup script:
+   - `cd terminal-config`
+   - `./scripts/setup-terminal-config.sh`
+3. Restart iTerm2 and open a new tab/shell.
+
+Optional full iTerm2 preferences restore (includes app-level/global settings):
+- `./scripts/setup-terminal-config.sh --full-iterm2`
+Optional dependency auto-install (if Homebrew already exists):
+- `./scripts/setup-terminal-config.sh --install-missing`
+
+## Recommended setup (profile + prompt, minimal risk)
+If you use the script above, you can skip this section. These are the equivalent manual steps.
+1. Clone this repo:
+   - `git clone https://github.com/michaelwitz/terminal-config.git`
+2. Install Starship:
+   - `brew install starship`
+3. Install Starship config:
+   - `mkdir -p ~/.config`
+   - `cp terminal-config/starship/starship.toml ~/.config/starship.toml`
+4. Enable Starship in Zsh:
+   - Back up existing shell config first:
+     - `cp ~/.zshrc ~/.zshrc.backup.$(date +%Y%m%d%H%M%S)`
+   - Add this line to the end of `~/.zshrc`:
+     - `source /ABSOLUTE/PATH/TO/terminal-config/zsh/starship-init.zsh`
+5. Install iTerm2 dynamic profile:
+   - `mkdir -p "$HOME/Library/Application Support/iTerm2/DynamicProfiles"`
+   - `cp terminal-config/iterm2/dynamic-profiles/default-profile.json "$HOME/Library/Application Support/iTerm2/DynamicProfiles/default-profile.json"`
+6. Restart iTerm2.
+7. In iTerm2:
+   - Open Settings → Profiles
+   - Select the imported profile (`Default`)
+   - Set it as default profile if needed
+
+## Optional full iTerm2 restore (includes global app preferences)
+Use this only if you want broad iTerm2 behavior to match this machine, not just profile appearance.
+
+1. Quit iTerm2 completely.
+2. Back up current preferences:
+   - `cp ~/Library/Preferences/com.googlecode.iterm2.plist ~/Library/Preferences/com.googlecode.iterm2.plist.backup.$(date +%Y%m%d%H%M%S)`
+3. Apply exported prefs:
+   - `cp terminal-config/iterm2/com.googlecode.iterm2.plist ~/Library/Preferences/com.googlecode.iterm2.plist`
+4. Re-open iTerm2.
+
+## Verification checklist
+- Prompt shows two lines with directory on top and `❯` on the bottom.
+- Git branch/status segments appear in Git repos.
+- Python and Node segments appear only when relevant.
+- Colors and font match expected appearance.
+
+## Notes
+- This repo intentionally avoids copying secrets from shell startup files.
+- If your target machine does not have the same font, iTerm2 may fall back to another font and look slightly different.
+- If `~/.zshrc` already has Starship init lines, keep only one initialization block.
+- The setup script creates timestamped backups before overwriting existing local files.
+- Without `--install-missing`, the setup script does not install dependencies; it only configures files.
+
+## Refresh this repo after local changes
+From this source machine, run:
+- `cp ~/.config/starship.toml /PATH/TO/terminal-config/starship/starship.toml`
+- `plutil -convert xml1 -o /PATH/TO/terminal-config/iterm2/com.googlecode.iterm2.plist ~/Library/Preferences/com.googlecode.iterm2.plist`
+- `python3 - <<'PY'\nimport plistlib, json\nsrc = '/Users/michael/Library/Preferences/com.googlecode.iterm2.plist'\nout = '/PATH/TO/terminal-config/iterm2/dynamic-profiles/default-profile.json'\nwith open(src, 'rb') as f:\n    data = plistlib.load(f)\nwith open(out, 'w', encoding='utf-8') as f:\n    json.dump({'Profiles': data.get('New Bookmarks', [])}, f, indent=2)\n    f.write('\\n')\nPY`
