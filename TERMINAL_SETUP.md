@@ -10,20 +10,21 @@ This document explains how to reproduce the terminal look-and-feel from this mac
 ## Profile details captured from this machine
 - iTerm2 profile name: `Default`
 - Exported profiles count: `1`
+- Default terminal size: `120` columns x `30` rows
 - Primary font: `CourierNewPSMT 18`
 - Non-ASCII font fallback: `Monaco 12`
 - Bright bold text enabled: `true`
-- Background color is near-white (RGB approximately `0.98, 0.98, 0.98`)
+- Light mode background is near-white (RGB approximately `0.98, 0.98, 0.98`)
+- Dark mode background is near-black with light gray text (RGB approximately `0.08, 0.10, 0.12` background and `0.86, 0.86, 0.86` foreground)
 
 ## Prerequisites
 - macOS
-- iTerm2 installed
-- Homebrew installed
 - Zsh shell
-- Starship installed
+- iTerm2 (recommended)
+- Starship (recommended)
 
 ## Install required applications first
-If Homebrew is not installed yet, install it first using the official instructions:
+If Homebrew is not installed yet and you want to install dependencies via command line, install it first using the official instructions:
 - https://brew.sh/
 
 Then install required apps:
@@ -37,11 +38,14 @@ Then install required apps:
    - `cd terminal-config`
    - `./scripts/setup-terminal-config.sh`
 3. Restart iTerm2 and open a new tab/shell.
+4. The script will copy configs, install `~/.config/terminal-config/starship-init.zsh`, ensure `~/.zshrc` sources it, and set the imported iTerm2 profile as default.
 
 Optional full iTerm2 preferences restore (includes app-level/global settings):
 - `./scripts/setup-terminal-config.sh --full-iterm2`
 Optional dependency auto-install (if Homebrew already exists):
 - `./scripts/setup-terminal-config.sh --install-missing`
+Optional: skip automatic default-profile selection:
+- `./scripts/setup-terminal-config.sh --no-set-default-profile`
 
 ## Recommended setup (profile + prompt, minimal risk)
 If you use the script above, you can skip this section. These are the equivalent manual steps.
@@ -76,17 +80,24 @@ Use this only if you want broad iTerm2 behavior to match this machine, not just 
    - `cp terminal-config/iterm2/com.googlecode.iterm2.plist ~/Library/Preferences/com.googlecode.iterm2.plist`
 4. Re-open iTerm2.
 
+## Exact iTerm2 match across machines
+For closest match with minimal manual steps:
+- Run `./scripts/setup-terminal-config.sh` to install the profile and auto-set it as default.
+- Restart iTerm2 so profile/default changes are fully loaded.
+- If you also want global iTerm2 app preferences to match, run `./scripts/setup-terminal-config.sh --full-iterm2`.
+
 ## Verification checklist
 - Prompt shows two lines with directory on top and `❯` on the bottom.
 - Git branch/status segments appear in Git repos.
 - Python and Node segments appear only when relevant.
 - Colors and font match expected appearance.
+- New terminal sessions open at approximately `120x30` (unless later overridden by local iTerm2 window/layout behavior).
 
 ## Notes
 - This repo intentionally avoids copying secrets from shell startup files.
 - If your target machine does not have the same font, iTerm2 may fall back to another font and look slightly different.
 - If `~/.zshrc` already has Starship init lines, keep only one initialization block.
-- The setup script creates timestamped backups before overwriting existing local files.
+- The setup script creates timestamped backups before changing existing `~/.config/starship.toml`, `~/.config/terminal-config/starship-init.zsh`, iTerm2 profile files, `~/Library/Preferences/com.googlecode.iterm2.plist`, and `~/.zshrc`.
 - Without `--install-missing`, the setup script does not install dependencies; it only configures files.
 
 ## Refresh this repo after local changes

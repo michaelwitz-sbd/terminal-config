@@ -19,14 +19,16 @@ ITERM_PLIST_DEST="${HOME}/Library/Preferences/com.googlecode.iterm2.plist"
 
 APPLY_FULL_ITERM2=false
 INSTALL_MISSING=false
+SET_DEFAULT_ITERM_PROFILE=true
 
 usage() {
   cat <<'EOF'
-Usage: ./scripts/setup-terminal-config.sh [--full-iterm2] [--install-missing] [--help]
+Usage: ./scripts/setup-terminal-config.sh [--full-iterm2] [--install-missing] [--no-set-default-profile] [--help]
 
 Options:
   --full-iterm2      Also apply full iTerm2 preferences plist (global app settings)
   --install-missing  Install missing dependencies (starship, iterm2) via Homebrew
+  --no-set-default-profile  Do not set the imported iTerm2 profile as default
   --help             Show this help text
 EOF
 }
@@ -39,6 +41,32 @@ backup_if_exists() {
   fi
 }
 
+set_iterm_default_profile() {
+  local profile_guid
+  local profile_name
+
+  profile_guid="$(awk -F'\"' '/\"Guid\"[[:space:]]*:[[:space:]]*\"/ {print $4; exit}' "$ITERM_PROFILE_SRC")"
+  profile_name="$(awk -F'\"' '/\"Name\"[[:space:]]*:[[:space:]]*\"/ {print $4; exit}' "$ITERM_PROFILE_SRC")"
+
+  if [ -z "$profile_guid" ]; then
+    printf 'Warning: could not find iTerm2 profile GUID in %s; skipping default profile update.\n' "$ITERM_PROFILE_SRC" >&2
+    return 0
+  fi
+
+  mkdir -p "$(dirname "$ITERM_PLIST_DEST")"
+  backup_if_exists "$ITERM_PLIST_DEST"
+
+  if defaults write com.googlecode.iterm2 "Default Bookmark Guid" -string "$profile_guid"; then
+    if [ -n "$profile_name" ]; then
+      printf 'Set iTerm2 default profile to %s (%s).\n' "$profile_name" "$profile_guid"
+    else
+      printf 'Set iTerm2 default profile GUID to %s.\n' "$profile_guid"
+    fi
+  else
+    printf 'Warning: failed to set iTerm2 default profile GUID.\n' >&2
+  fi
+}
+
 for arg in "$@"; do
   case "$arg" in
     --full-iterm2)
@@ -46,6 +74,9 @@ for arg in "$@"; do
       ;;
     --install-missing)
       INSTALL_MISSING=true
+      ;;
+    --no-set-default-profile)
+      SET_DEFAULT_ITERM_PROFILE=false
       ;;
     --help|-h)
       usage
@@ -114,6 +145,7 @@ cp "$STARSHIP_SRC" "$STARSHIP_DEST"
 
 printf 'Installing Starship Zsh init snippet...\n'
 mkdir -p "$(dirname "$ZSH_SNIPPET_DEST")"
+backup_if_exists "$ZSH_SNIPPET_DEST"
 cp "$ZSH_SNIPPET_SRC" "$ZSH_SNIPPET_DEST"
 
 touch "$ZSHRC_DEST"
@@ -121,6 +153,7 @@ SOURCE_LINE='source "$HOME/.config/terminal-config/starship-init.zsh"'
 if grep -Fq "$SOURCE_LINE" "$ZSHRC_DEST"; then
   printf 'Zsh source line already present in %s\n' "$ZSHRC_DEST"
 else
+  backup_if_exists "$ZSHRC_DEST"
   {
     printf '\n# terminal-config Starship init\n'
     printf '%s\n' "$SOURCE_LINE"
@@ -132,6 +165,10 @@ printf 'Installing iTerm2 dynamic profile...\n'
 mkdir -p "$(dirname "$ITERM_PROFILE_DEST")"
 backup_if_exists "$ITERM_PROFILE_DEST"
 cp "$ITERM_PROFILE_SRC" "$ITERM_PROFILE_DEST"
+
+if [ "$SET_DEFAULT_ITERM_PROFILE" = true ]; then
+  set_iterm_default_profile
+fi
 
 if [ "$APPLY_FULL_ITERM2" = true ]; then
   printf 'Applying full iTerm2 preferences plist...\n'
@@ -148,5 +185,7 @@ fi
 printf '\nSetup complete.\n'
 printf 'Next steps:\n'
 printf '1) Restart iTerm2\n'
-printf '2) Open iTerm2 Settings -> Profiles and select/set the imported profile if needed\n'
-printf '3) Open a new shell (or run: exec zsh)\n'
+printf '2) Open a new shell (or run: exec zsh)\n'
+if [ "$SET_DEFAULT_ITERM_PROFILE" = false ]; then
+  printf '3) Open iTerm2 Settings -> Profiles and select/set the imported profile if needed\n'
+fi

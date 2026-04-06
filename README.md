@@ -9,10 +9,15 @@ This repo contains:
 - `scripts/setup-terminal-config.sh` — one-command installer for Starship + iTerm2 profile
 - `TERMINAL_SETUP.md` — detailed setup instructions
 
-Required software on target machine:
-- Homebrew
+The setup script installs config files, updates `~/.zshrc` to source the Starship snippet, sets the imported iTerm2 profile as default, and creates timestamped backups before replacing existing files.
+Default iTerm2 terminal size in this repo: `120` columns x `30` rows.
+For full effect on a target machine:
 - iTerm2
 - Starship
 
-The setup script supports optional dependency installation:
+Homebrew is only required if you want the script to auto-install missing dependencies:
 - `./scripts/setup-terminal-config.sh --install-missing`
+
+Useful setup options:
+- `./scripts/setup-terminal-config.sh --full-iterm2` (also restore global iTerm2 app preferences)
+- `./scripts/setup-terminal-config.sh --no-set-default-profile` (opt out of auto-setting the imported profile as default)
