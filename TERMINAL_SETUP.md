@@ -16,6 +16,7 @@ This document explains how to reproduce the terminal look-and-feel from this mac
 - Bright bold text enabled: `true`
 - Light mode background is near-white (RGB approximately `0.98, 0.98, 0.98`)
 - Dark mode background is near-black with light gray text (RGB approximately `0.08, 0.10, 0.12` background and `0.86, 0.86, 0.86` foreground)
+- Supports system appearance switching (light/dark mode toggle)
 
 ## Prerequisites
 - macOS
@@ -52,6 +53,12 @@ Do not run `source scripts/setup-terminal-config.sh`.
 Reason:
 - `./scripts/setup-terminal-config.sh` runs the installer in a separate Bash process (intended behavior).
 - `source scripts/setup-terminal-config.sh` runs it inside your current interactive shell, which can leak side effects into your live session.
+
+### Force dark mode appearance (optional)
+If you want the terminal to use dark mode colors even if your system appearance is set to light:
+```bash
+./scripts/setup-terminal-config.sh --dark-mode
+```
 
 Optional full iTerm2 preferences restore (includes app-level/global settings):
 - `./scripts/setup-terminal-config.sh --full-iterm2`
@@ -92,6 +99,41 @@ Use this only if you want broad iTerm2 behavior to match this machine, not just 
 3. Apply exported prefs:
    - `cp terminal-config/iterm2/com.googlecode.iterm2.plist ~/Library/Preferences/com.googlecode.iterm2.plist`
 4. Re-open iTerm2.
+
+## Troubleshooting: iTerm2 Dark Mode Not Working
+
+### Problem: Terminal stays in light mode even after changing to dark mode
+The profile includes both light and dark color schemes, but iTerm2 doesn't automatically respect system appearance changes by default.
+
+### Solutions (try in order):
+
+**Solution 1: Use the setup script with --dark-mode flag**
+```bash
+./scripts/setup-terminal-config.sh --dark-mode
+```
+Then quit and restart iTerm2.
+
+**Solution 2: Manually set appearance in iTerm2 Settings**
+1. Open iTerm2 Preferences (Cmd + ,)
+2. Go to Appearance tab
+3. Under "General":
+   - Set "Theme" to your preferred appearance
+   - Try: "Dark", "Light", or "Auto" (system-dependent)
+4. Under "Profiles" → "Colors":
+   - Select the "Default" profile
+   - Verify "Use Separate Colors for Light and Dark Mode" is enabled
+5. Close and reopen iTerm2
+
+**Solution 3: Check system appearance setting**
+macOS controls the system appearance. iTerm2 should follow your system preference:
+- System Preferences → General → Appearance
+- Choose "Light", "Dark", or "Auto"
+
+**Solution 4: Full preferences reset**
+If none of the above work, restore full iTerm2 preferences:
+```bash
+./scripts/setup-terminal-config.sh --full-iterm2
+```
 
 ## Exact iTerm2 match across machines
 For closest match with minimal manual steps:

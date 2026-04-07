@@ -7,6 +7,10 @@ $nodejs\
 $line_break\
 $character"""
 
+# Cursor settings
+command_timeout = 500
+scan_timeout = 10
+
 # Directory
 [directory]
 truncation_length = 2
@@ -40,3 +44,7 @@ style = "bold green"
 [character]
 success_symbol = "[❯](bold green)"
 error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold green)"
+vimcmd_replace_symbol = "[❮](bold green)"
+vimcmd_replace_one_symbol = "[❮](bold green)"
+vimcmd_visual_symbol = "[❮](bold green)"

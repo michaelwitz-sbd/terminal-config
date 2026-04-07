@@ -20,15 +20,17 @@ ITERM_PLIST_DEST="${HOME}/Library/Preferences/com.googlecode.iterm2.plist"
 APPLY_FULL_ITERM2=false
 INSTALL_MISSING=false
 SET_DEFAULT_ITERM_PROFILE=true
+FORCE_DARK_MODE=false
 
 usage() {
   cat <<'EOF'
-Usage: ./scripts/setup-terminal-config.sh [--full-iterm2] [--install-missing] [--no-set-default-profile] [--help]
+Usage: ./scripts/setup-terminal-config.sh [--full-iterm2] [--install-missing] [--no-set-default-profile] [--dark-mode] [--help]
 
 Options:
   --full-iterm2      Also apply full iTerm2 preferences plist (global app settings)
   --install-missing  Install missing dependencies (starship, iterm2) via Homebrew
   --no-set-default-profile  Do not set the imported iTerm2 profile as default
+  --dark-mode        Force iTerm2 dark mode appearance by updating system prefs
   --help             Show this help text
 EOF
 }
@@ -67,6 +69,26 @@ set_iterm_default_profile() {
   fi
 }
 
+force_iterm_dark_mode() {
+  printf 'Forcing iTerm2 dark mode appearance...\n'
+  
+  quit_iterm_if_running() {
+    if pgrep -q iTerm; then
+      printf 'Closing iTerm2...\n'
+      osascript -e 'tell application "iTerm" to quit' 2>/dev/null || true
+      sleep 1
+    fi
+  }
+  
+  quit_iterm_if_running
+  
+  defaults write com.googlecode.iterm2 "NSAppearance" -string "NSAppearanceNameDarkAqua"
+  defaults write com.googlecode.iterm2 "UIPreferredContentSizeCategory" -string "L"
+  
+  printf 'Dark mode preferences set.\n'
+  printf 'Restart iTerm2 to apply changes.\n'
+}
+
 for arg in "$@"; do
   case "$arg" in
     --full-iterm2)
@@ -77,6 +99,9 @@ for arg in "$@"; do
       ;;
     --no-set-default-profile)
       SET_DEFAULT_ITERM_PROFILE=false
+      ;;
+    --dark-mode)
+      FORCE_DARK_MODE=true
       ;;
     --help|-h)
       usage
@@ -175,6 +200,10 @@ if [ "$APPLY_FULL_ITERM2" = true ]; then
   mkdir -p "$(dirname "$ITERM_PLIST_DEST")"
   backup_if_exists "$ITERM_PLIST_DEST"
   cp "$ITERM_PLIST_SRC" "$ITERM_PLIST_DEST"
+fi
+
+if [ "$FORCE_DARK_MODE" = true ]; then
+  force_iterm_dark_mode
 fi
 
 if ! command -v starship >/dev/null 2>&1; then

@@ -52,11 +52,11 @@
         "Green Component": 0.40782788395881653
       },
       "Background Color": {
-        "Red Component": 0.98,
+        "Red Component": 0.0806884765625,
         "Color Space": "sRGB",
-        "Blue Component": 0.98,
+        "Blue Component": 0.12103271484375,
         "Alpha Component": 1.0,
-        "Green Component": 0.98
+        "Green Component": 0.09911105036735535
       },
       "Columns": 120,
       "Ansi 8 Color": {
@@ -225,7 +225,7 @@
         "Color Space": "sRGB",
         "Blue Component": 0.0,
         "Alpha Component": 1.0,
-        "Green Component": 0.0
+        "Green Component": 0.7607843279838562
       },
       "Vertical Spacing": 1.0,
       "Disable Window Resizing": true,
@@ -306,11 +306,11 @@
         "Green Component": 0.9042816162109375
       },
       "Foreground Color": {
-        "Red Component": 0.062745101749897,
+        "Red Component": 0.8619791269302368,
         "Color Space": "sRGB",
-        "Blue Component": 0.062745101749897,
+        "Blue Component": 0.8619885444641113,
         "Alpha Component": 1.0,
-        "Green Component": 0.062745101749897
+        "Green Component": 0.86199951171875
       },
       "Link Color (Light)": {
         "Red Component": 0.1980242282152176,
@@ -536,7 +536,9 @@
         "Green Component": 1.0
       },
       "Blur": false,
-      "Use Separate Colors for Light and Dark Mode": true,
+      "Use Separate Colors for Light and Dark Mode": false,
+      "Use Tab Color For Window": false,
+      "Use Window Background Color": true,
       "Background Color (Light)": {
         "Red Component": 0.98,
         "Color Space": "sRGB",
